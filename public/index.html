@@ -12,9 +12,21 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>Debias example</title>
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+
+    <script type="text/javascript">
+      (async () => {
+        window.py_outputs = [];
+        window.pyodide = await loadPyodide({
+          stdout: (text) => window.py_outputs.push(text)
+        });
+        window.pyodide.loadPackage(['numpy']);
+      })();
+    </script>
   </body>
 </html>
