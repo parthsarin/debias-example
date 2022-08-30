@@ -4,31 +4,39 @@ import { faPlay, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useRef } from "react";
 
 import './CodePane.css';
+import { resetEditor, runCode } from "./CodeUtils";
 
-function CodePane() {
-  const editorRef = useRef(null);
+interface CodePaneProps {
+  setOutput: (o: string) => void
+}
 
-  const height = Math.round(window.innerHeight - 100);
-  const width = Math.round(window.innerWidth * 0.48);
+function CodePane({ setOutput }: CodePaneProps) {
+  const editorRef = useRef<any>(null);
 
   return (
-    <div className="h-100 p-2 flex flex-col">
-      <div className="flex flex-row mb-2 justify-around ">
-        <button className="btn btn-purple flex self-center">
+    <div className="h-full p-4 flex flex-col">
+      <div className="flex flex-row mb-4 justify-around ">
+        <button 
+          className="btn btn-purple flex self-center"
+          onClick={() => runCode(editorRef, setOutput)}
+        >
           <FontAwesomeIcon icon={faPlay} className="mr-2" /> Run
         </button>
-        <button className="btn btn-red flex self-center">
+        <button 
+          className="btn btn-red flex self-center"
+          onClick={() => resetEditor(editorRef)}
+        >
           <FontAwesomeIcon icon={faTrash} className="mr-2" /> Reset
         </button>
       </div>
       <Editor
-        height={`${height}px`}
-        width={`${width}px`}
+        height={`100%`}
+        width={`100%`}
 
         defaultLanguage="python"
         defaultValue="# hello, world!"
         options={{
-          fontSize: 14
+          fontSize: 16
         }}
 
         onMount={(editor, monaco) => editorRef.current = editor}

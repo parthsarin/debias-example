@@ -8,10 +8,16 @@ import UserContext from './UserContext';
 import './App.css';
 import Loader from '../Loader';
 import CodePane from '../CodePane';
+import NarrativePane from '../NarrativePane';
+
+function logOut() {
+  getAuth().signOut();
+}
 
 function App() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [output, setOutput] = useState<string>('');
 
   useEffect(() => {
     const auth = getAuth();
@@ -52,13 +58,24 @@ function App() {
 
   if (loading) return <Loader />;
   
+  const width = window.innerWidth;
   return (
     <UserContext.Provider value={user}>
       <div className="app w-full h-full">
-        <SplitPane>
-          <div>Welcome {user.displayName}!</div>
-          <CodePane />
+        {/* @ts-ignore */}
+        <SplitPane 
+          primary='first' 
+          defaultSize='30%' 
+          minSize={300} 
+          maxSize={width - 800}
+          split='vertical'
+        >
+          <NarrativePane output={output} />
+          <CodePane setOutput={setOutput} />
         </SplitPane>
+      </div>
+      <div className="fixed bottom-0 left-0 bg-black bg-opacity-30 z-50 p-1">
+        Logged in as {user.displayName}. (<button onClick={logOut} className="underline">Not you?</button>)
       </div>
     </UserContext.Provider>
   );
