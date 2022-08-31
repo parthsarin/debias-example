@@ -1,3 +1,4 @@
+import { addDoc, collection, getFirestore, serverTimestamp } from "firebase/firestore";
 import { MutableRefObject } from "react";
 
 function runCode(editor: MutableRefObject<any>, setOutput: (o: string) => void) {
@@ -28,4 +29,22 @@ function resetEditor(editor: MutableRefObject<any>) {
   editor.current.setValue('# hello, world!');
 }
 
-export { runCode, resetEditor };
+function persistChanges(editorContent: string, uid: string | undefined) {
+  localStorage.setItem('debiasEditorVal', editorContent);
+  if (!uid) return;
+
+  const db = getFirestore();
+  addDoc(collection(db, 'logs'), { 
+    uid, editorContent, 
+    event: 'TYPE',
+    time: serverTimestamp()
+  });
+}
+
+function getEditorDefaultValue() {
+  const editorContent = localStorage.getItem('debiasEditorVal');
+  if (editorContent) return editorContent;
+  return '# hello world!';
+}
+
+export { runCode, resetEditor, persistChanges, getEditorDefaultValue };

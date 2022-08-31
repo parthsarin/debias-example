@@ -1,10 +1,12 @@
 import Editor from "@monaco-editor/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useRef } from "react";
+import { useContext, useEffect, useMemo, useRef } from "react";
 
 import './CodePane.css';
-import { resetEditor, runCode } from "./CodeUtils";
+import { getEditorDefaultValue, persistChanges, resetEditor, runCode } from "./CodeUtils";
+import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
+import UserContext from "../App/UserContext";
 
 interface CodePaneProps {
   setOutput: (o: string) => void
@@ -12,6 +14,17 @@ interface CodePaneProps {
 
 function CodePane({ setOutput }: CodePaneProps) {
   const editorRef = useRef<any>(null);
+  const typeSubj$ = useMemo(() => new Subject<string>(), []);
+  const uid = useContext(UserContext)?.uid;
+
+  useEffect(() => {
+    const syncSubscriber = typeSubj$.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe((val: string) => persistChanges(val, uid))
+
+    return () => syncSubscriber.unsubscribe();
+  }, [typeSubj$]);
 
   return (
     <div className="h-full p-4 flex flex-col">
@@ -34,12 +47,13 @@ function CodePane({ setOutput }: CodePaneProps) {
         width={`100%`}
 
         defaultLanguage="python"
-        defaultValue="# hello, world!"
+        defaultValue={getEditorDefaultValue()}
         options={{
           fontSize: 16
         }}
 
         onMount={(editor, monaco) => editorRef.current = editor}
+        onChange={(v) => typeSubj$.next(v!)}
       />
     </div>
   )
