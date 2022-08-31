@@ -24,7 +24,7 @@ function CodePane({ setOutput }: CodePaneProps) {
     ).subscribe((val: string) => persistChanges(val, uid))
 
     return () => syncSubscriber.unsubscribe();
-  }, [typeSubj$]);
+  }, [typeSubj$, uid]);
 
   return (
     <div className="h-full p-4 flex flex-col">
