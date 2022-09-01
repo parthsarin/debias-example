@@ -1,7 +1,13 @@
 import { addDoc, collection, getFirestore, serverTimestamp } from "firebase/firestore";
 import { MutableRefObject } from "react";
 
-function runCode(editor: MutableRefObject<any>, setOutput: (o: string) => void) {
+function runCode(
+  editor: MutableRefObject<any>, 
+  setOutput: (o: string) => void,
+  setLoading: (l: boolean) => void
+) {
+  setLoading(true);
+
   // @ts-ignore
   const pyodide = window.pyodide as any;
   if (!editor.current || !pyodide) return;
@@ -21,12 +27,21 @@ function runCode(editor: MutableRefObject<any>, setOutput: (o: string) => void) 
   }
 
   setOutput(resp);
+  setLoading(false);
 }
 
-function resetEditor(editor: MutableRefObject<any>) {
+function resetEditor(editor: MutableRefObject<any>, scaffold: string, uid: string | undefined) {
   if (!editor.current) return;
 
-  editor.current.setValue('# hello, world!');
+  editor.current.setValue(scaffold);
+  
+  if (!uid) return;
+  const db = getFirestore();
+  addDoc(collection(db, 'logs'), {
+    uid, editorContent: scaffold,
+    event: 'RESET_SCAFFOLD',
+    time: serverTimestamp()
+  });
 }
 
 function persistChanges(editorContent: string, uid: string | undefined) {

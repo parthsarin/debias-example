@@ -25,7 +25,7 @@
         window.pyodide = await loadPyodide({
           stdout: (text) => window.py_outputs.push(text)
         });
-        window.pyodide.loadPackage(['numpy']);
+        window.pyodide.loadPackage(['pandas', 'scikit-learn']);
       })();
     </script>
   </body>

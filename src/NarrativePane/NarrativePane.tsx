@@ -1,11 +1,14 @@
+import Loader from '../Loader';
 import './NarrativePane.css';
 
 interface NarrativePaneProps {
-  output: string
+  output: string,
+  loading: boolean
 }
 
-const NarrativePane = ({ output }: NarrativePaneProps) => (
+const NarrativePane = ({ output, loading }: NarrativePaneProps) => (
   <div className="h-full p-4 overflow-y-scroll">
+    {loading && <Loader />}
     <h1 className="text-2xl mb-2">Debias an algorithm</h1>
     <p className="mb-2">
       Earlier, we saw how AI algorithms can be biased if the data that they 
