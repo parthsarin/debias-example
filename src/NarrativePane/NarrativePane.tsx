@@ -1,14 +1,11 @@
-import Loader from '../Loader';
 import './NarrativePane.css';
 
 interface NarrativePaneProps {
   output: string,
-  loading: boolean
 }
 
-const NarrativePane = ({ output, loading }: NarrativePaneProps) => (
+const NarrativePane = ({ output }: NarrativePaneProps) => (
   <div className="h-full p-4 overflow-y-scroll">
-    {loading && <Loader />}
     <h1 className="text-2xl mb-2">Debias an algorithm</h1>
     <p className="mb-2">
       Earlier, we saw how AI algorithms can be biased if the data that they 
@@ -30,7 +27,7 @@ const NarrativePane = ({ output, loading }: NarrativePaneProps) => (
     {
       output 
       && (
-      <pre className="mt-2 bg-gray-100 border rounded-md border-black p-3">
+      <pre className="mt-2 bg-gray-100 border rounded-md border-black p-3 overflow-x-scroll">
         <code>
           {output}
         </code>

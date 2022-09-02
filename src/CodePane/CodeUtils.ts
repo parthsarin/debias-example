@@ -1,13 +1,33 @@
 import { addDoc, collection, getFirestore, serverTimestamp } from "firebase/firestore";
 import { MutableRefObject } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { ModelSelectionParameters, modelVariables } from "./ModelSelection/ModelParameters";
+import { generateCodeFromParameters } from "./ModelSelection/ModelParametersUtils";
+
+const MySwal = withReactContent(Swal)
+const Toast = MySwal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', MySwal.stopTimer)
+    toast.addEventListener('mouseleave', MySwal.resumeTimer)
+  }
+});
+
+const defaultModelSelectionParams = {
+  MODEL_CHOICE: 'LogisticRegression',
+  MODEL_OPTIONS: {'penalty': "'l2'"},
+  VARIABLE_CHOICE: modelVariables
+} as ModelSelectionParameters;
+
 
 function runCode(
   editor: MutableRefObject<any>, 
-  setOutput: (o: string) => void,
-  setLoading: (l: boolean) => void
+  setOutput: (o: string) => void
 ) {
-  setLoading(true);
-
   // @ts-ignore
   const pyodide = window.pyodide as any;
   if (!editor.current || !pyodide) return;
@@ -27,13 +47,21 @@ function runCode(
   }
 
   setOutput(resp);
-  setLoading(false);
+  Toast.fire({
+    icon: 'success',
+    title: 'Execution complete'
+  })
 }
 
-function resetEditor(editor: MutableRefObject<any>, scaffold: string, uid: string | undefined) {
+function resetEditor(
+  editor: MutableRefObject<any>, 
+  scaffold: string, 
+  defaultModelSelectionParams: ModelSelectionParameters,
+  uid: string | undefined
+) {
   if (!editor.current) return;
 
-  editor.current.setValue(scaffold);
+  editor.current.setValue(generateCodeFromParameters(scaffold, defaultModelSelectionParams));
   
   if (!uid) return;
   const db = getFirestore();
@@ -45,7 +73,6 @@ function resetEditor(editor: MutableRefObject<any>, scaffold: string, uid: strin
 }
 
 function persistChanges(editorContent: string, uid: string | undefined) {
-  localStorage.setItem('debiasEditorVal', editorContent);
   if (!uid) return;
 
   const db = getFirestore();
@@ -56,10 +83,4 @@ function persistChanges(editorContent: string, uid: string | undefined) {
   });
 }
 
-function getEditorDefaultValue() {
-  const editorContent = localStorage.getItem('debiasEditorVal');
-  if (editorContent) return editorContent;
-  return '# hello world!';
-}
-
-export { runCode, resetEditor, persistChanges, getEditorDefaultValue };
+export { runCode, resetEditor, persistChanges, defaultModelSelectionParams };

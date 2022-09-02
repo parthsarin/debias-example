@@ -17,7 +17,6 @@ function logOut() {
 function App() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [narrativeLoading, setNarrativeLoading] = useState(false);
   const [output, setOutput] = useState<string>('');
 
   useEffect(() => {
@@ -71,8 +70,8 @@ function App() {
           maxSize={width - 800}
           split='vertical'
         >
-          <NarrativePane output={output} loading={narrativeLoading} />
-          <CodePane setOutput={setOutput} setNarrativeLoading={setNarrativeLoading} />
+          <NarrativePane output={output} />
+          <CodePane setOutput={setOutput} />
         </SplitPane>
       </div>
       <div className="fixed bottom-0 left-0 bg-black bg-opacity-30 z-50 p-1">
