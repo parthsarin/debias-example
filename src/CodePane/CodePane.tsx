@@ -71,7 +71,7 @@ function CodePane({ setOutput }: CodePaneProps) {
         generateCodeFromParameters(scaffold, modelSelectionParams)
       );
     })();
-  }, [scaffold]);
+  }, [scaffold, modelSelectionParams]);
 
   return (
     <div className="h-full p-4 flex flex-col">
