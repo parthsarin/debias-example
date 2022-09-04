@@ -116,7 +116,10 @@ function CodePane({ setOutput }: CodePaneProps) {
             fontSize: 16
           }}
 
-          onMount={(editor, monaco) => editorRef.current = editor}
+          onMount={(editor, monaco) => {
+            editorRef.current = editor;
+            if (scaffold) editor.setValue(scaffold);
+          }}
           onChange={(v) => typeSubj$.next(v!)}
         />
       </div>
