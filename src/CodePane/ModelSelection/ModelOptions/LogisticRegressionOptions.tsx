@@ -14,7 +14,7 @@ const LogisticRegressionOptions = ({ options, updateOptions }: OptionSelectorPro
           penalties.map((p) => (
             <option
               value={p}
-              selected={options.penalty.replace(/^(\'|\")+|(\'|\")+$/g, '') === p}
+              selected={options.penalty.replace(/^('|")+|('|")+$/g, '') === p}
             >{p}</option>
           ))
         }
